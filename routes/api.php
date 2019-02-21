@@ -19,9 +19,12 @@ use Illuminate\Http\Request;
 
 // Usuarios
 Route::resource('users','User\UserController',['only'=>['index','show','update','destroy','store']]);
+Route::post('users/{id?}','User\UserController@update_imagen');
 
 //Usuarios-Reservaciones
-Route::name('users.reservaciones')->post('users/reservaciones','User\UserReservacionController@busqueda');
+/*Route::name('users.reservaciones')->post('users/reservaciones','User\UserReservacionController@busqueda');
+*/
+Route::name('usersyreservaciones')->post('usersyreservaciones','User\UserReservacionController@busqueda2');
 
 
 
@@ -29,6 +32,7 @@ Route::name('users.reservaciones')->post('users/reservaciones','User\UserReserva
 Route::resource('hospedajes','Hospedajes\HospedajesController',['only'=>['index','show','update','destroy','store','update_imagen']]);
 
 Route::post('hospedajes/{id?}','Hospedajes\HospedajesController@update_imagen');
+Route::name('hospedaje_fecha')->get('hospedaje_fecha','Hospedajes\HospedajesController@index_fechas');
 
 //Route::name('hospedajes')->post('hospedajes/{id?}','HospedajesController@update_imagen');
 
@@ -72,17 +76,34 @@ MAIL_USERNAME=59372054904a80
 MAIL_PASSWORD=f6c84fe8ad0870
 MAIL_ENCRYPTION=tls
 
+
+
 MAIL_DRIVER=smtp
 MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
 MAIL_USERNAME=josejulianfigueroa@gmail.com
-MAIL_PASSWORD=yltjsiagljxkfukr
+MAIL_PASSWORD=pamcitnlgjolzcmp
+MAIL_ENCRYPTION=tls
+
+MAIL_DRIVER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=residenciaselcristo@gmail.com
+MAIL_PASSWORD=iplsuiupooxgyaqj
 MAIL_ENCRYPTION=tls
 
 MAIL_DRIVER=smtp
 MAIL_HOST=mail.eficaz.cl
 MAIL_PORT=587
 MAIL_USERNAME=jfigueroa
-MAIL_PASSWORD=Jfigueroa16
+MAIL_PASSWORD=becerrO2018
 MAIL_ENCRYPTION=tls
+
+// Base de Datos Local
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=resid_cristo
+DB_USERNAME=root
+DB_PASSWORD=
 */

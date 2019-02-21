@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SignUpRequest; 
 use App\User;
-
+use Illuminate\Http\Request;
+use Validator;
 use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
@@ -29,22 +30,37 @@ class AuthController extends Controller
     public function login()
     {
         $credentials = request(['email', 'password']);
-        Log::info($credentials);
+
         if (! $token = auth()->attempt($credentials)) {
+
             return response()->json(['error' => 'Usuario no Registrado'], 401);
         }
 
         return $this->respondWithToken($token);
     }
 
-      public function signup(SignUpRequest $request)
+      public function signup(Request $request)
     {
-        Log::info($request);
-        User::create($request->all());
 
-        return $this->login($request);
-    }
+         $validator = Validator::make($request->all(), [
+             'nombre' => 'required',
+            'email' => 'required|email|unique:users',
+           // 'password' => 'required|confirmed'
+            'password' => 'required'
+        ]);
 
+        
+        if ($validator->passes()) {
+
+            User::create($request->all());
+
+            return $this->login($request);
+        }else{
+
+            return response()->json(['error' => 'Email ya existe, Intente con otro'], 422);
+        }
+
+        }
 
     /**
      * Get the authenticated User.
@@ -91,7 +107,14 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()->nombre
+            'nombre' => auth()->user()->nombre,
+            'rol' => auth()->user()->admin,
+            'id' => auth()->user()->id,
+            'email' => auth()->user()->email,
+            'apellido' => auth()->user()->apellido,
+            'direccion' => auth()->user()->direccion,
+            'imagen' => auth()->user()->imagen,
+            'imagen' => auth()->user()->imagen
         ]);
     }
 }

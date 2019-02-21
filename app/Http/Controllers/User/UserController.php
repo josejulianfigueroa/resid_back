@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\User;
 
 use App\User;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
 
@@ -80,10 +83,36 @@ class UserController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+     public function update_imagen(Request $request,$id) {
+
+
+         if (Input::hasFile('imagen')){
+             if ($id) {
+
+        $user = User::findOrFail($id);
+
+        $valor =str_random(3);
+    
+        Storage::delete($user->imagen);
+
+        $file = Input::file('imagen');
+
+        $file->move(public_path().'/img/',$valor.'_'.$file->getClientOriginalName());
+
+        $user->imagen = $valor.'_'.$file->getClientOriginalName();
+          
+         $user->save();
+
+        //return response()->json(['data' => $user], 200);
+         return $this->showOne($user, 201);
+        }
+    }
+     }
+
     public function update(Request $request, User $user)
     {
        // $user= User::findOrFail($id);
-
+/*
         $rules = [
                     // exceptuamos el propio email del usuario
                 'email' =>'email|unique:users,email,' . $user->id ,
@@ -92,9 +121,20 @@ class UserController extends ApiController
         ];
 
         $this->validate($request,$rules);
+*/
+ 
 
         if ($request->has('nombre')) {
             $user->nombre = $request->nombre;
+        }
+        if ($request->has('apellido')) {
+            $user->apellido = $request->apellido;
+        }
+        if ($request->has('direccion')) {
+            $user->direccion = $request->direccion;
+        }
+        if ($request->has('telefono')) {
+            $user->telefono = $request->telefono;
         }
          if ($request->has('cedula')) {
             $user->cedula = $request->cedula;
@@ -119,9 +159,7 @@ class UserController extends ApiController
         }
         if (!$user->isDirty()){
 
-            return $this->errorResponse('Deben existir valores diferentes para poder actualizar', 422);
-
-              
+            return $this->errorResponse('Deben existir valores diferentes para poder actualizar', 422);       
         }
 
         $user->save();

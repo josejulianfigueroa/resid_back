@@ -7,21 +7,23 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class ResetPasswordMail extends Mailable
+class CargaPagoReservaMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $token;
-    public $email;
+    public $status;
+    public $desc;
+    public $nombre;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($token,$email)
+    public function __construct($st,$ds,$no)
     {
-        $this->token = $token;
-        $this->email = $email;
+        $this->status = $st;
+        $this->desc = $ds;
+        $this->nombre = $no;
     }
 
     /**
@@ -31,8 +33,10 @@ class ResetPasswordMail extends Mailable
      */
     public function build()
     {
-        return $this->markdown('Email.passwordReset')->with([
-            'token' => $this->token,'email' => $this->email
+        return $this->markdown('Email.cambioEstadoReserva')->with([
+            'st' => $this->status,
+            'ds' => $this->desc,
+            'no' => $this->nombre
         ]);
     }
 }

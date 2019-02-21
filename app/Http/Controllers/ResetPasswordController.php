@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPasswordMail;
@@ -25,7 +26,8 @@ class ResetPasswordController extends Controller
     public function send($email)
     {
         $token = $this->createToken($email);
-        Mail::to($email)->send(new ResetPasswordMail($token));
+        Mail::to($email)->send(new ResetPasswordMail($token,$email));
+        //   Mail::to($user)->send(new UserCreated($user));
     }
 
     public function createToken($email)

@@ -1,12 +1,13 @@
 @component('mail::message')
-# Change password Request
 
-Click sobre el bot+on de abajo para cambiar el password
+# Solicitud de Cambio de Password
 
-@component('mail::button', ['url' => 'http://localhost:4201/#/response-password-reset?token='.$token])
+Click sobre el botón de abajo para cambiar el password
+
+@component('mail::button', ['url' => 'http://localhost:4500/#/response-password-reset?token='.$token.'&email='.$email])
 Reset Password
 @endcomponent
 
-Gracias,<br>
-{{ config('app.name') }}
+Gracias<br>
+Visita www.residenciaselcristo.com.ve
 @endcomponent

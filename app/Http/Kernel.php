@@ -40,7 +40,7 @@ class Kernel extends HttpKernel
 
         'api' => [
             'cors',
-            'throttle:1000,1', // Peticiones por minuto
+            'throttle:10000,1', // Peticiones por minuto
             'bindings',
         ],
     ];
@@ -62,8 +62,8 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'cors' => \App\Http\Middleware\Cors2::class,
-      //  'cors' => \Barryvdh\Cors\HandleCors::class,
+         'cors' => \App\Http\Middleware\Cors2::class,
+      // 'cors' => \Barryvdh\Cors\HandleCors::class,
         
     ];
 }

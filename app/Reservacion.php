@@ -26,7 +26,8 @@ class Reservacion extends Model
     			'fechareserva',
     			'hospedaje_id',
     			'user_id',
-    			'status'
+    			'status',
+                'dias'
      ];
 
      public function estaConfirmada(){

@@ -23,7 +23,10 @@ class Hospedaje extends Model
     			'descripcion',
     			'tipo',
     			'precio',
-    			'image'
+    			'image',
+    			'image0',
+    			'image1',
+    			'image2'
     ];
 	protected $dates = ['deleted_at'];
 

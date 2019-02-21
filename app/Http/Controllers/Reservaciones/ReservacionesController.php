@@ -5,10 +5,20 @@ namespace App\Http\Controllers\Reservaciones;
 use Carbon\Carbon;
 use App\Calendario;
 use App\Pagos;
+use App\Hospedaje;
 use App\Reservacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ApiController;
+
+
+use App\User;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ReservaMail;
+
+
 
 class ReservacionesController extends ApiController
 {
@@ -110,8 +120,31 @@ class ReservacionesController extends ApiController
 
        $campos['status'] = Reservacion::POR_CONFIRMAR;
        $campos['fechareserva'] = $mytime;
+       $campos['dias'] = $diasDiferencia;
 
        $reservacion = Reservacion::create($campos);
+
+
+       // Procedimientos para el envio del email
+       $fe1=$request->input('fechainicio');
+       $fe2=$request->input('fechasalida');
+
+        $hospe = Hospedaje::findOrFail($request->get('hospedaje_id'));
+        $user = User::findOrFail($request->get('user_id'));
+
+
+    Mail::to($user->email)
+                    ->cc(['figueroa.marisabel@gmail.com','figueroa.veruska@gmail.com'
+                        ,'josejulianfigueroa@gmail.com'])
+                    ->send(new ReservaMail($fe1,
+                                           $fe2,
+                                           $hospe->descripcion,
+                                           $hospe->precio,
+                                           $diasDiferencia,
+                                           $user->nombre,
+                                           $mytime,
+                                           $diasDiferencia*$hospe->precio
+                                            ));
 
        return $this->showOne($reservacion, 201);
        

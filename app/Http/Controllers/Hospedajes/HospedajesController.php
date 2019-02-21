@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Hospedajes;
 
+
+use DB;
 use App\Hospedaje;
 use App\Reservacion;
+use App\Calendario;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Input;
@@ -27,6 +31,36 @@ class HospedajesController extends ApiController
        return $this->showAll($hospedajes);
     }
 
+
+        public function index_fechas()
+    {
+        $start = request()->fecha1;
+        $end = request()->fecha2;
+       
+        $fechainicio = Carbon::parse($start);
+        $fechasalida = Carbon::parse($end);
+
+        $diasDiferencia = $fechasalida->diffInDays($fechainicio);
+
+        $hospedajes = DB::table('hospedajes')
+                        ->select('id','descripcion','tipo','precio','image','image0','image1','image2','created_at','updated_at','deleted_at', DB::raw($diasDiferencia.' as dias'))
+                        ->whereNotIn('id', 
+                        DB::table('calendarios as c')
+                            ->whereDate('fecha','>=',$start)
+                            ->whereDate('fecha','<=',$end)
+                            ->pluck('hospedaje_id')
+                        )
+                        ->whereNull('deleted_at')
+        ->get();
+
+       //return $usuarios; // Retorna Json por Defecto
+        //return response()->json(['data' => $usuarios],200);
+       return $this->showAll($hospedajes);
+     
+    }
+
+
+
     /**
      * Store a newly created resource in storage.
      *
@@ -35,21 +69,21 @@ class HospedajesController extends ApiController
      */
     public function store(Request $request)
     {
- // Log::info($request);
+
 // return $request;
-        $rules = [
+     /*   $rules = [
                 'descripcion' => 'required',
                 'tipo' =>'required|in: ' . Hospedaje::TIPO_APARTAMENTO . ',' . Hospedaje::TIPO_CASA. ',' . Hospedaje::TIPO_HABITACION,
                // 'precio' => 'required|numeric|min:0'
         ];
 
         $this->validate($request,$rules);
+        */
 
         $hospedaje=new Hospedaje;
         $hospedaje->descripcion=$request->get('descripcion');
-         $hospedaje->tipo=$request->get('tipo');
-          $hospedaje->precio=$request->get('precio');
-
+        $hospedaje->tipo=$request->get('tipo');
+        $hospedaje->precio=$request->get('precio');
 
        //$campos = $request->all();
 
@@ -57,12 +91,35 @@ class HospedajesController extends ApiController
 
             if (Input::hasFile('image')){
         $valor =str_random(3);
-        // Log::info($valor);
-
         $file = Input::file('image');
         $file->move(public_path().'/img/',$valor.'_'.$file->getClientOriginalName());
 
          $hospedaje->image = $valor.'_'.$file->getClientOriginalName();
+        
+        }
+  
+                    if (Input::hasFile('image0')){
+        $valor =str_random(3);
+        $file = Input::file('image0');
+        $file->move(public_path().'/img/',$valor.'_'.$file->getClientOriginalName());
+
+         $hospedaje->image0 = $valor.'_'.$file->getClientOriginalName();
+        
+        }
+                    if (Input::hasFile('image1')){
+        $valor =str_random(3);
+        $file = Input::file('image1');
+        $file->move(public_path().'/img/',$valor.'_'.$file->getClientOriginalName());
+
+         $hospedaje->image1 = $valor.'_'.$file->getClientOriginalName();
+        
+        }
+                          if (Input::hasFile('image2')){
+        $valor =str_random(3);
+        $file = Input::file('image2');
+        $file->move(public_path().'/img/',$valor.'_'.$file->getClientOriginalName());
+
+         $hospedaje->image2 = $valor.'_'.$file->getClientOriginalName();
         
         }
 
@@ -80,6 +137,8 @@ if(Input::hasFile('imagen')){
        // Asignacion Masiva de los atributos
                                    // a un array
        // return response()->json(['data' => $usuario], 201);
+
+
             return $this->showOne($hospedaje, 201);
     
 }
@@ -107,6 +166,49 @@ if(Input::hasFile('imagen')){
         $file->move(public_path().'/img/',$valor.'_'.$file->getClientOriginalName());
 
         $hospedaje->image = $valor.'_'.$file->getClientOriginalName();
+        
+        }
+
+
+         if (Input::hasFile('image0')){
+        $valor =str_random(3);
+        // Log::info($valor);
+
+        Storage::delete($hospedaje->image0);
+
+        $file = Input::file('image0');
+        $file->move(public_path().'/img/',$valor.'_'.$file->getClientOriginalName());
+
+        $hospedaje->image0 = $valor.'_'.$file->getClientOriginalName();
+        
+        }
+
+
+
+         if (Input::hasFile('image1')){
+        $valor =str_random(3);
+        // Log::info($valor);
+
+        Storage::delete($hospedaje->image1);
+
+        $file = Input::file('image1');
+        $file->move(public_path().'/img/',$valor.'_'.$file->getClientOriginalName());
+
+        $hospedaje->image1 = $valor.'_'.$file->getClientOriginalName();
+        
+        }
+
+
+         if (Input::hasFile('image2')){
+        $valor =str_random(3);
+        // Log::info($valor);
+
+        Storage::delete($hospedaje->image2);
+
+        $file = Input::file('image2');
+        $file->move(public_path().'/img/',$valor.'_'.$file->getClientOriginalName());
+
+        $hospedaje->image2 = $valor.'_'.$file->getClientOriginalName();
         
         }
         $hospedaje->update();  
@@ -172,6 +274,9 @@ if(Input::hasFile('imagen')){
         
         $hospedaje = Hospedaje::findOrFail($id);
         Storage::delete($hospedaje->image);
+         Storage::delete($hospedaje->image0);
+          Storage::delete($hospedaje->image1);
+           Storage::delete($hospedaje->image2);
         $hospedaje->delete();
 
         return $this->showOne($hospedaje, 200);
